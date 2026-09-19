@@ -13,7 +13,6 @@ import {
   Step,
   StepLabel,
   Stepper,
-  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -22,7 +21,13 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/auth/useAuth';
 import { ApiError, describeFieldErrors } from '@/api/errors';
-import { AuthShell } from './AuthShell';
+import {
+  AuthCardHeading,
+  AuthField,
+  AuthFieldRow,
+  AuthShell,
+  AuthSubmitButton,
+} from './AuthShell';
 
 /**
  * Mirrors the backend signup contract (`POST /api/auth/signup`). The server
@@ -88,10 +93,17 @@ const schema = z
 
 type SignupValues = z.infer<typeof schema>;
 
-const HIGHLIGHTS = [
+const EYEBROW = ['One tenant', 'Isolated data', 'Live in minutes'];
+
+const BULLETS = [
   'One tenant per company: branches, stock and documents stay isolated',
   'You start as the company admin, with access to every branch',
   'Add products, suppliers and users as soon as you are in',
+];
+
+const FACTS = [
+  { value: 'Three steps', label: 'account, company, branches' },
+  { value: 'Up to 20', label: 'branches at setup' },
 ];
 
 const STEPS = ['Your account', 'Your company', 'Your branches'] as const;
@@ -262,16 +274,22 @@ export function SignupPage() {
 
   return (
     <AuthShell
-      headline="Set your pharmacy network up in three steps."
-      highlights={HIGHLIGHTS}
-      cardMaxWidth={560}
+      eyebrow={EYEBROW}
+      headline="Set your pharmacy network up in"
+      headlineAccent="three steps"
+      subline="Your company, its branches and your admin account are created together, so the document trail starts from the first goods receipt rather than a migration."
+      bullets={BULLETS}
+      facts={FACTS}
+      altCaption="Already have an account?"
+      altLabel="Sign in"
+      altTo="/login"
+      footnote="Built for multi-branch hospital pharmacy operations"
+      cardMaxWidth={580}
     >
-      <Typography variant="h5" fontWeight={800}>
-        Create your company
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 3 }}>
-        This sets up the company, its branches and your admin account in one go.
-      </Typography>
+      <AuthCardHeading
+        title="Create your company"
+        subtitle="This sets up the company, its branches and your admin account in one go."
+      />
 
       <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
         {STEPS.map((label) => (
@@ -291,46 +309,45 @@ export function SignupPage() {
 
           <Box hidden={activeStep !== 0}>
             <Stack spacing={2}>
-              <TextField
-                label="Your name"
-                required
-                autoComplete="name"
-                fullWidth
-                error={Boolean(errors.adminName)}
-                helperText={errors.adminName?.message}
-                {...register('adminName')}
-              />
-              <TextField
-                label="Work email"
-                type="email"
-                required
-                autoComplete="username"
-                fullWidth
-                error={Boolean(errors.email)}
-                helperText={errors.email?.message ?? 'You will sign in with this address.'}
-                {...register('email')}
-              />
-              <TextField
+              <AuthFieldRow>
+                <AuthField
+                  label="Your name"
+                  placeholder="Dr. A. Sharma"
+                  required
+                  autoComplete="name"
+                  errorText={errors.adminName?.message}
+                  {...register('adminName')}
+                />
+                <AuthField
+                  label="Work email"
+                  placeholder="you@hospital.com"
+                  type="email"
+                  required
+                  autoComplete="username"
+                  errorText={errors.email?.message}
+                  hint="You will sign in with this address."
+                  {...register('email')}
+                />
+              </AuthFieldRow>
+              <AuthField
                 label="Password"
+                placeholder="At least 8 characters"
                 type="password"
+                revealable
                 required
                 autoComplete="new-password"
-                fullWidth
-                error={Boolean(errors.password)}
-                helperText={
-                  errors.password?.message ??
-                  'At least 8 characters, with an uppercase letter, a lowercase letter and a number.'
-                }
+                errorText={errors.password?.message}
+                hint="At least 8 characters, with an uppercase letter, a lowercase letter and a number."
                 {...register('password')}
               />
-              <TextField
+              <AuthField
                 label="Confirm password"
+                placeholder="Repeat the password"
                 type="password"
+                revealable
                 required
                 autoComplete="new-password"
-                fullWidth
-                error={Boolean(errors.confirmPassword)}
-                helperText={errors.confirmPassword?.message}
+                errorText={errors.confirmPassword?.message}
                 {...register('confirmPassword')}
               />
             </Stack>
@@ -338,25 +355,21 @@ export function SignupPage() {
 
           <Box hidden={activeStep !== 1}>
             <Stack spacing={2}>
-              <TextField
+              <AuthField
                 label="Company name"
+                placeholder="City Care Hospitals"
                 required
-                fullWidth
-                error={Boolean(errors.companyName)}
-                helperText={errors.companyName?.message}
+                errorText={errors.companyName?.message}
                 {...register('companyName', {
                   onChange: (event) => handleCompanyNameChange(event.target.value),
                 })}
               />
-              <TextField
+              <AuthField
                 label="Company code"
+                placeholder="COMP-CITY-CARE"
                 required
-                fullWidth
-                error={Boolean(errors.companyCode)}
-                helperText={
-                  errors.companyCode?.message ??
-                  'Suggested from the company name. It must be unique and cannot be changed later.'
-                }
+                errorText={errors.companyCode?.message}
+                hint="Suggested from the company name. It must be unique and cannot be changed later."
                 {...register('companyCode', {
                   onChange: () => {
                     codeEdited.current = true;
@@ -383,7 +396,7 @@ export function SignupPage() {
                 return (
                   <Box
                     key={field.id}
-                    sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}
+                    sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 2.5 }}
                   >
                     <Stack
                       direction="row"
@@ -414,29 +427,26 @@ export function SignupPage() {
                     </Stack>
 
                     <Stack spacing={2}>
-                      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                        <TextField
+                      <AuthFieldRow>
+                        <AuthField
                           label="Branch code"
+                          placeholder="BR-CENTRAL"
                           required
-                          fullWidth
-                          error={Boolean(branchErrors?.code)}
-                          helperText={branchErrors?.code?.message}
+                          errorText={branchErrors?.code?.message}
                           {...register(`branches.${index}.code` as const)}
                         />
-                        <TextField
+                        <AuthField
                           label="Branch name"
+                          placeholder="Central Pharmacy Warehouse"
                           required
-                          fullWidth
-                          error={Boolean(branchErrors?.name)}
-                          helperText={branchErrors?.name?.message}
+                          errorText={branchErrors?.name?.message}
                           {...register(`branches.${index}.name` as const)}
                         />
-                      </Stack>
-                      <TextField
+                      </AuthFieldRow>
+                      <AuthField
                         label="Address (optional)"
-                        fullWidth
-                        error={Boolean(branchErrors?.address)}
-                        helperText={branchErrors?.address?.message}
+                        placeholder="Street, city, PIN"
+                        errorText={branchErrors?.address?.message}
                         {...register(`branches.${index}.address` as const)}
                       />
                       <input type="hidden" {...register(`branches.${index}.type` as const)} />
@@ -481,19 +491,28 @@ export function SignupPage() {
           </Box>
 
           <Stack direction="row" spacing={2} sx={{ pt: 1 }}>
-            <Button onClick={handleBack} disabled={activeStep === 0 || isSubmitting} fullWidth>
+            <Button
+              onClick={handleBack}
+              disabled={activeStep === 0 || isSubmitting}
+              fullWidth
+              sx={{ borderRadius: 2.5, minHeight: 50 }}
+            >
               Back
             </Button>
             {isLastStep ? (
-              <Button type="submit" variant="contained" disabled={isSubmitting} fullWidth>
+              <AuthSubmitButton disabled={isSubmitting}>
                 {isSubmitting ? 'Creating…' : 'Create company'}
-              </Button>
+              </AuthSubmitButton>
             ) : (
-              <Button onClick={handleNext} variant="contained" fullWidth>
+              <AuthSubmitButton type="button" onClick={handleNext}>
                 Continue
-              </Button>
+              </AuthSubmitButton>
             )}
           </Stack>
+
+          <Typography variant="caption" color="text.secondary" textAlign="center">
+            No spam. Your details are used only to set up the workspace.
+          </Typography>
 
           <Typography variant="body2" color="text.secondary" textAlign="center">
             Already have an account?{' '}

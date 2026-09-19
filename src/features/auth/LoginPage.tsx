@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Alert, Box, Button, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Stack, Typography } from '@mui/material';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/auth/useAuth';
 import { ApiError } from '@/api/errors';
-import { AuthShell } from './AuthShell';
+import { AuthCardHeading, AuthField, AuthShell, AuthSubmitButton } from './AuthShell';
 
 const schema = z.object({
   email: z.string().min(1, 'Email is required').email('Enter a valid email address'),
@@ -15,10 +15,17 @@ const schema = z.object({
 
 type LoginValues = z.infer<typeof schema>;
 
-const HIGHLIGHTS = [
+const EYEBROW = ['Multi-branch', 'Audit-ready', 'Role-based access'];
+
+const BULLETS = [
   'Requirements, orders, receipts and corrections in one document register',
   'Damaged and missing stock kept out of usable inventory, always',
   'Every posting traceable through an append-only stock ledger',
+];
+
+const FACTS = [
+  { value: 'Central warehouse', label: 'to every dispensing branch' },
+  { value: 'Batch & expiry', label: 'tracked end to end' },
 ];
 
 export function LoginPage() {
@@ -51,46 +58,55 @@ export function LoginPage() {
 
   return (
     <AuthShell
-      headline="Multi-branch pharmacy operations, end to end."
-      highlights={HIGHLIGHTS}
+      eyebrow={EYEBROW}
+      headline="The pharmacy ERP that keeps your"
+      headlineAccent="branches stocked"
+      subline="One workspace for requirements, purchase orders, goods receipts, transfers, dispensing and corrections — with the stock ledger balancing behind every one of them."
+      bullets={BULLETS}
+      facts={FACTS}
+      altCaption="New to HealthPilot?"
+      altLabel="Create account"
+      altTo="/signup"
+      footnote="Built for multi-branch hospital pharmacy operations"
     >
-      <Typography variant="h5" fontWeight={800}>
-        Sign in
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 3 }}>
-        Use your branch account to continue to the workspace.
-      </Typography>
+      <AuthCardHeading
+        title="Sign in"
+        subtitle="Use your branch account to continue to the workspace."
+      />
 
       <form onSubmit={onSubmit} noValidate>
         <Stack spacing={2}>
           {formError ? <Alert severity="error">{formError}</Alert> : null}
 
-          <TextField
-            label="Email"
+          <AuthField
+            label="Work email"
+            placeholder="you@hospital.com"
             type="email"
             required
             autoComplete="username"
             autoFocus
-            fullWidth
-            error={Boolean(errors.email)}
-            helperText={errors.email?.message}
+            errorText={errors.email?.message}
             {...register('email')}
           />
 
-          <TextField
+          <AuthField
             label="Password"
+            placeholder="Your password"
             type="password"
+            revealable
             required
             autoComplete="current-password"
-            fullWidth
-            error={Boolean(errors.password)}
-            helperText={errors.password?.message}
+            errorText={errors.password?.message}
             {...register('password')}
           />
 
-          <Button type="submit" variant="contained" size="large" disabled={isSubmitting}>
+          <AuthSubmitButton disabled={isSubmitting}>
             {isSubmitting ? 'Signing in…' : 'Sign in'}
-          </Button>
+          </AuthSubmitButton>
+
+          <Typography variant="caption" color="text.secondary" textAlign="center">
+            Your session is tied to this browser and expires when you sign out.
+          </Typography>
 
           <Typography variant="body2" color="text.secondary" textAlign="center">
             New to HealthPilot?{' '}
