@@ -53,7 +53,7 @@ export const NAV_SECTIONS: NavSection[] = [
     title: 'Operations',
     items: [
       {
-        label: 'Stock Requirements',
+        label: 'Stock Requisitions',
         path: '/requirements',
         icon: <ListAltOutlinedIcon fontSize="small" />,
         permissions: ['STOCK_REQUIREMENT_VIEW'],

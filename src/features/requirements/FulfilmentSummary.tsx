@@ -101,7 +101,7 @@ export function FulfilmentProgress({
         Fulfilment
       </Typography>
       <Typography variant="caption" color="text.secondary">
-        Usable stock actually received against this requirement, from supplier receipts and
+        Usable stock actually received against this requisition, from supplier receipts and
         internal branch transfers
       </Typography>
 

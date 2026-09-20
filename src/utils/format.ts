@@ -71,7 +71,7 @@ export function humanise(value: string | null | undefined): string {
 }
 
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
-  STOCK_REQUIREMENT: 'Stock Requirement',
+  STOCK_REQUIREMENT: 'Stock Requisition',
   PURCHASE_ORDER: 'Purchase Order',
   GOODS_RECEIPT: 'Goods Receipt',
   RECEIPT_CORRECTION: 'Receipt Correction',

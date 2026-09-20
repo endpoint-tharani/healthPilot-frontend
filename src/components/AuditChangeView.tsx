@@ -34,7 +34,7 @@ const FIELD_LABELS: Record<string, string> = {
   creditNote: 'Credit note',
   payment: 'Payment',
   purchaseOrder: 'Purchase order',
-  requirement: 'Requirement',
+  requirement: 'Requisition',
   corrects: 'Corrects',
   creditFor: 'Credit for',
   supplierRef: 'Supplier reference',

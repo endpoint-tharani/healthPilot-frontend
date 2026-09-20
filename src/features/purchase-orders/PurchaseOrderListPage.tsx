@@ -22,12 +22,12 @@ export function PurchaseOrderListPage() {
   return (
     <DocumentListPage
       title="Purchase Orders"
-      subtitle="Orders raised with suppliers against approved requirements"
+      subtitle="Orders raised with suppliers against approved requisitions"
       queryKey="purchase-orders"
       fetcher={purchaseOrderApi.list}
       basePath="/purchase-orders"
       statuses={['DRAFT', 'SUBMITTED', 'APPROVED', 'CANCELLED']}
-      emptyDescription="Approve a stock requirement first, then raise a purchase order against it."
+      emptyDescription="Approve a stock requisition first, then raise a purchase order against it."
       actions={
         can('PURCHASE_ORDER_CREATE') ? (
           <Button

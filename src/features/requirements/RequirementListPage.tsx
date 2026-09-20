@@ -18,7 +18,7 @@ export function RequirementListPage() {
 
   return (
     <DocumentListPage
-      title="Stock Requirements"
+      title="Stock Requisitions"
       subtitle="Branch demand raised against central procurement"
       queryKey="stock-requirements"
       fetcher={requirementApi.list}
@@ -32,7 +32,7 @@ export function RequirementListPage() {
         'FULFILLED',
         'CANCELLED',
       ]}
-      emptyDescription="Raise a requirement to start the procurement cycle."
+      emptyDescription="Raise a requisition to start the procurement cycle."
       actions={
         can('STOCK_REQUIREMENT_CREATE') ? (
           <Button
@@ -42,7 +42,7 @@ export function RequirementListPage() {
             startIcon={<AddIcon />}
             size="small"
           >
-            New Requirement
+            New Requisition
           </Button>
         ) : null
       }

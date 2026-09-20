@@ -28,7 +28,7 @@ export interface ActionQueueItem {
 export const ACTION_QUEUE: ActionQueueItem[] = [
   {
     key: 'approve-requirements',
-    label: 'Requirements to approve',
+    label: 'Requisitions to approve',
     caption: 'Submitted and waiting for a decision',
     to: '/requirements?status=SUBMITTED',
     documentType: 'STOCK_REQUIREMENT',

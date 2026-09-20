@@ -35,7 +35,7 @@ export function RequirementItems({
       <EmptyState
         dense
         title="No line items"
-        description="This requirement does not list any products."
+        description="This requisition does not list any products."
       />
     );
   }

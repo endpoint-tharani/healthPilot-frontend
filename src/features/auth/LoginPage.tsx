@@ -18,7 +18,7 @@ type LoginValues = z.infer<typeof schema>;
 const EYEBROW = ['Multi-branch', 'Audit-ready', 'Role-based access'];
 
 const BULLETS = [
-  'Requirements, orders, receipts and corrections in one document register',
+  'Requisitions, orders, receipts and corrections in one document register',
   'Damaged and missing stock kept out of usable inventory, always',
   'Every posting traceable through an append-only stock ledger',
 ];
@@ -61,7 +61,7 @@ export function LoginPage() {
       eyebrow={EYEBROW}
       headline="The pharmacy ERP that keeps your"
       headlineAccent="branches stocked"
-      subline="One workspace for requirements, purchase orders, goods receipts, transfers, dispensing and corrections — with the stock ledger balancing behind every one of them."
+      subline="One workspace for requisitions, purchase orders, goods receipts, transfers, dispensing and corrections — with the stock ledger balancing behind every one of them."
       bullets={BULLETS}
       facts={FACTS}
       altCaption="New to HealthPilot?"

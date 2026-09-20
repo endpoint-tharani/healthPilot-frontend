@@ -29,15 +29,16 @@ import { useToast } from '@/components/Toast';
 import { FormSection, SelectInput, SubmitError, TextInput } from '@/components/FormFields';
 import { LoadingState } from '@/components/states';
 import { dec, formatMoney, money, sumDecimals, type Decimal } from '@/utils/decimal';
-import { daysFromNowInput, formatDate } from '@/utils/format';
+import { daysFromNowInput } from '@/utils/format';
 import { useAuthoritativeFulfilment } from '@/features/requirements/useRequirementFulfilment';
+import { RequirementPicker } from '@/features/requirements/RequirementPicker';
 import {
   SourcingContextPanel,
   opportunityFromAvailability,
 } from '@/features/requirements/SourcingOpportunity';
 
 const schema = z.object({
-  requirementId: z.string().uuid('Select a requirement'),
+  requirementId: z.string().uuid('Select a requisition'),
   supplierId: z.string().uuid('Select a supplier'),
   deliveryBranchId: z.string().uuid('Select the delivery branch'),
   expectedDeliveryDate: z.string().min(1, 'Expected delivery date is required'),
@@ -70,13 +71,17 @@ export function PurchaseOrderCreatePage() {
   const { data: products } = useProducts();
   const { data: suppliers } = useSuppliers();
 
-  // APPROVED requirements plus PARTIALLY_FULFILLED ones, which may still be
-  // ordered against for whatever a receipt correction left short. The backend
-  // enforces both the status and the remaining quantity.
-  const approvedRequirements = useQuery({
-    queryKey: ['stock-requirements', 'orderable-options'],
-    queryFn: () => requirementApi.list({ status: 'APPROVED,PARTIALLY_FULFILLED', limit: 100 }),
-    select: (result) => result.data,
+  /**
+   * Whether anything is orderable at all, for the empty-state notice only.
+   *
+   * The picker below does its own searching against the server; this asks the
+   * cheapest possible question - is there at least one - rather than pulling a
+   * page of requisitions the form does not otherwise need.
+   */
+  const orderableCount = useQuery({
+    queryKey: ['stock-requirements', 'orderable-count'],
+    queryFn: () => requirementApi.list({ status: 'APPROVED,PARTIALLY_FULFILLED', limit: 1 }),
+    select: (result) => result.meta.total,
   });
 
   const { control, handleSubmit, watch, setValue } = useForm<FormValues>({
@@ -221,22 +226,15 @@ export function PurchaseOrderCreatePage() {
       ? opportunityFromAvailability(fulfilment.availability)
       : null;
 
-  if (approvedRequirements.isLoading) {
-    return <LoadingState label="Loading approved requirements…" />;
+  if (orderableCount.isLoading) {
+    return <LoadingState label="Loading stock requisitions…" />;
   }
-
-  const requirementOptions = (approvedRequirements.data ?? []).map((requirement) => ({
-    value: requirement.id,
-    label: `${requirement.documentNumber} • ${requirement.branch?.name ?? ''} • required ${formatDate(
-      requirement.expectedDeliveryDate
-    )}`,
-  }));
 
   return (
     <form onSubmit={handleSubmit((values) => mutation.mutate(values))} noValidate>
       <PageHeader
         title="New Purchase Order"
-        subtitle="Raised against an approved stock requirement"
+        subtitle="Raised against an approved stock requisition"
         actions={
           <>
             <Button size="small" onClick={() => navigate('/purchase-orders')}>
@@ -261,24 +259,22 @@ export function PurchaseOrderCreatePage() {
         />
       ) : null}
 
-      {requirementOptions.length === 0 ? (
+      {orderableCount.data === 0 ? (
         <Alert severity="info" sx={{ mb: 2 }}>
-          No orderable requirements are available. A purchase order can only be raised against a
-          requirement that is APPROVED, or PARTIALLY_FULFILLED with a quantity still outstanding.
+          No orderable stock requisitions are available. A purchase order can only be raised against
+          a requisition that is APPROVED, or PARTIALLY_FULFILLED with a quantity still outstanding.
         </Alert>
       ) : null}
 
       <FormSection title="Order details">
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
-            <SelectInput
+            <RequirementPicker
               control={control}
               name="requirementId"
-              label="Requirement"
+              label="Stock requisition"
               required
-              placeholder="Select a requirement"
-              options={requirementOptions}
-              helperText="APPROVED requirements, and PARTIALLY_FULFILLED ones for the quantity still outstanding"
+              helperText="Search by requisition number, branch or product. APPROVED requisitions, and PARTIALLY_FULFILLED ones for the quantity still outstanding."
             />
           </Grid>
           <Grid item xs={12} md={6}>

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,13 +18,14 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { stockTransferApi } from '@/api/endpoints';
 import { useBranches, useStock, useTransferDestinations } from '@/hooks/useReferenceData';
 import { PageHeader } from '@/components/PageHeader';
 import { useToast } from '@/components/Toast';
 import { FormSection, SelectInput, SubmitError, TextInput } from '@/components/FormFields';
 import { LoadingState } from '@/components/states';
+import { RequirementPicker } from '@/features/requirements/RequirementPicker';
 import { dec, formatQuantity } from '@/utils/decimal';
 import { daysFromNowInput, formatDate } from '@/utils/format';
 
@@ -32,6 +33,13 @@ const schema = z
   .object({
     sourceBranchId: z.string().uuid('Select the source branch'),
     destinationBranchId: z.string().uuid('Select the destination branch'),
+    /**
+     * Optional, and deliberately so: a transfer may be a plain rebalancing of
+     * stock between branches with no requisition behind it. When one is named,
+     * the backend counts the stock towards that requisition on receipt - which
+     * is the only way an internal transfer can fulfil anything.
+     */
+    requirementId: z.string().uuid().optional().or(z.literal('')),
     expectedDate: z.string().optional(),
     notes: z.string().max(500).optional(),
     lines: z
@@ -60,12 +68,16 @@ export function TransferCreatePage() {
   const toast = useToast();
   const { data: branches, isLoading: branchesLoading } = useBranches();
   const { data: destinations } = useTransferDestinations();
+  const [searchParams] = useSearchParams();
 
-  const { control, handleSubmit, watch, formState } = useForm<FormValues>({
+  const { control, handleSubmit, watch, setValue, formState } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       sourceBranchId: '',
-      destinationBranchId: '',
+      // Raised from a requisition's sourcing view, both the destination and the
+      // requisition arrive in the URL, so the link is not left to be remembered.
+      destinationBranchId: searchParams.get('destinationBranchId') ?? '',
+      requirementId: searchParams.get('requirementId') ?? '',
       expectedDate: daysFromNowInput(2),
       notes: '',
       lines: [{ stockKey: '', quantity: '' }],
@@ -74,7 +86,27 @@ export function TransferCreatePage() {
 
   const { fields, append, remove } = useFieldArray({ control, name: 'lines' });
   const sourceBranchId = watch('sourceBranchId');
+  const destinationBranchId = watch('destinationBranchId');
   const lines = watch('lines');
+
+  /**
+   * A requisition belongs to the branch that raised it, and the backend accepts
+   * one only when its branch is this transfer's destination. Changing the
+   * destination therefore invalidates the choice, rather than leaving a pairing
+   * on the form that would be rejected on submit.
+   *
+   * The previous destination is remembered so this clears on a real change and
+   * not on the first render, where it would wipe a requisition that arrived in
+   * the URL alongside its branch.
+   */
+  const lastDestination = useRef(destinationBranchId);
+  useEffect(() => {
+    if (lastDestination.current === destinationBranchId) {
+      return;
+    }
+    lastDestination.current = destinationBranchId;
+    setValue('requirementId', '');
+  }, [destinationBranchId, setValue]);
 
   // Only usable stock can leave a branch; damaged stock is never offered.
   const stock = useStock(
@@ -111,6 +143,7 @@ export function TransferCreatePage() {
         ...(values.expectedDate
           ? { expectedDate: new Date(values.expectedDate).toISOString() }
           : {}),
+        ...(values.requirementId ? { requirementId: values.requirementId } : {}),
         ...(values.notes ? { notes: values.notes } : {}),
         lines: values.lines.map((line) => {
           const option = optionByKey.get(line.stockKey)!;
@@ -200,7 +233,22 @@ export function TransferCreatePage() {
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-          <Grid item xs={6} md={2}>
+          <Grid item xs={12} md={6}>
+            <RequirementPicker
+              control={control}
+              name="requirementId"
+              label="Fulfils stock requisition (optional)"
+              branchId={destinationBranchId || undefined}
+              disabled={!destinationBranchId}
+              helperText={
+                destinationBranchId
+                  ? 'Link this transfer to a requisition raised by the destination branch, so the stock counts towards it on receipt'
+                  : 'Choose a destination branch first'
+              }
+              noOptionsText="The destination branch has no open stock requisitions"
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
             <TextInput control={control} name="notes" label="Notes" />
           </Grid>
         </Grid>

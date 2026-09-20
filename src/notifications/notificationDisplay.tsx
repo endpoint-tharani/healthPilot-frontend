@@ -54,11 +54,11 @@ export function notificationIcon(type: NotificationType): React.ElementType {
 }
 
 export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
-  STOCK_REQUIREMENT_SUBMITTED: 'Requirement submitted',
-  STOCK_REQUIREMENT_APPROVED: 'Requirement approved',
-  STOCK_REQUIREMENT_REJECTED: 'Requirement rejected',
-  STOCK_REQUIREMENT_PARTIALLY_FULFILLED: 'Requirement partially fulfilled',
-  STOCK_REQUIREMENT_FULFILLED: 'Requirement fulfilled',
+  STOCK_REQUIREMENT_SUBMITTED: 'Requisition submitted',
+  STOCK_REQUIREMENT_APPROVED: 'Requisition approved',
+  STOCK_REQUIREMENT_REJECTED: 'Requisition rejected',
+  STOCK_REQUIREMENT_PARTIALLY_FULFILLED: 'Requisition partially fulfilled',
+  STOCK_REQUIREMENT_FULFILLED: 'Requisition fulfilled',
   PURCHASE_ORDER_CREATED: 'Purchase order raised',
   PURCHASE_ORDER_APPROVED: 'Purchase order approved',
   GOODS_RECEIPT_POSTED: 'Goods receipt posted',

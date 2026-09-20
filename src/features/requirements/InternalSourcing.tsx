@@ -322,7 +322,7 @@ function SourcingPlan({
 
       {outstanding.isZero() ? (
         <Alert severity="success" sx={{ mb: 2 }} icon={<CheckCircleOutlineIcon />}>
-          Nothing is outstanding on this requirement, so there is nothing left to source.
+          Nothing is outstanding on this requisition, so there is nothing left to source.
         </Alert>
       ) : null}
 
@@ -363,7 +363,7 @@ function SourcingPlan({
           <Alert severity="info" sx={{ mb: 2 }}>
             Raising a transfer does not move stock. It records the allocation; the source branch
             dispatches it and the destination receives it, and only that receipt counts towards this
-            requirement.
+            requisition.
           </Alert>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}

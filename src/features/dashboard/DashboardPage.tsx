@@ -82,7 +82,7 @@ interface MetricDefinition {
 const METRICS: MetricDefinition[] = [
   {
     key: 'requirements',
-    label: 'Pending requirements',
+    label: 'Pending requisitions',
     caption: 'Submitted, awaiting approval',
     to: '/requirements?status=SUBMITTED',
     documentType: 'STOCK_REQUIREMENT',

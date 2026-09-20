@@ -37,7 +37,7 @@ export function ChainFinancialSummary({
         <EmptyState
           dense
           title="No financial documents yet"
-          description="Totals appear once a purchase order is raised against this requirement."
+          description="Totals appear once a purchase order is raised against this requisition."
         />
       </Box>
     );
@@ -80,7 +80,7 @@ export function ChainPayments({ payments }: { payments: ChainPayment[] }) {
       <EmptyState
         dense
         title="No payment allocations"
-        description="No payments have been allocated to this requirement's invoices yet."
+        description="No payments have been allocated to this requisition's invoices yet."
       />
     );
   }
@@ -88,7 +88,7 @@ export function ChainPayments({ payments }: { payments: ChainPayment[] }) {
   return (
     <Box>
       <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }} flexWrap="wrap" useFlexGap>
-        <Chip size="small" label="Requirement" variant="outlined" />
+        <Chip size="small" label="Requisition" variant="outlined" />
         <Typography variant="caption" color="text.disabled">
           →
         </Typography>

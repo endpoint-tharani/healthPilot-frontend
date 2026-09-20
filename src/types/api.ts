@@ -253,6 +253,13 @@ export interface CompanyUser {
 
 /* ----------------------------------------------------------- documents ---- */
 
+/** One line of a document, reduced to what a picker or a list row needs. */
+export interface DocumentLineSummary {
+  product: { id: string; code: string; name: string; unit: string };
+  quantity: string;
+  unitOfMeasure: string | null;
+}
+
 export interface DocumentSummary {
   id: string;
   companyId: string;
@@ -284,6 +291,12 @@ export interface DocumentSummary {
   supplier: SupplierRef | null;
   createdBy: UserRef;
   _count?: { lineItems: number };
+  /**
+   * The first few product lines, served only by endpoints that opt in - today
+   * the stock requisition list, where a picker has to tell one requisition from
+   * another by what was asked for rather than by its number alone.
+   */
+  lineSummary?: DocumentLineSummary[];
 }
 
 export interface DocumentLineItem {

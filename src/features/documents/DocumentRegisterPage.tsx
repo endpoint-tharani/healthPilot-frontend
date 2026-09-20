@@ -94,7 +94,7 @@ export function DocumentRegisterPage() {
       </FilterBar>
 
       <Alert severity="info" sx={{ mb: 2 }}>
-        Requirements, purchase orders, receipts, corrections, invoices, credit notes, transfers and
+        Requisitions, purchase orders, receipts, corrections, invoices, credit notes, transfers and
         dispensing are all rows in one Document table, linked to each other through DocumentLink.
       </Alert>
 

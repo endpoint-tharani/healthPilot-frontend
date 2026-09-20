@@ -113,11 +113,11 @@ export function RequirementDetailPage() {
         label="Submit"
         permitted={can('STOCK_REQUIREMENT_CREATE')}
         enabled={detail.status === 'DRAFT'}
-        disabledHint="Only a draft requirement can be submitted"
+        disabledHint="Only a draft requisition can be submitted"
         icon={<SendIcon />}
         variant="outlined"
-        confirmTitle="Submit requirement for approval"
-        confirmDescription={`Requirement ${detail.documentNumber} will be sent for approval.`}
+        confirmTitle="Submit requisition for approval"
+        confirmDescription={`Requisition ${detail.documentNumber} will be sent for approval.`}
         reason="optional"
         action={(reason) => requirementApi.submit(id, reason)}
         invalidateKeys={invalidateKeys}
@@ -127,10 +127,10 @@ export function RequirementDetailPage() {
         label="Approve"
         permitted={can('STOCK_REQUIREMENT_APPROVE')}
         enabled={detail.status === 'SUBMITTED'}
-        disabledHint="Only a submitted requirement can be approved"
+        disabledHint="Only a submitted requisition can be approved"
         icon={<CheckCircleOutlineIcon />}
         color="success"
-        confirmTitle="Approve requirement"
+        confirmTitle="Approve requisition"
         confirmDescription={`Approving ${detail.documentNumber} allows a purchase order to be raised against it.`}
         reason="optional"
         action={(reason) => requirementApi.approve(id, reason)}
@@ -141,11 +141,11 @@ export function RequirementDetailPage() {
         label="Reject"
         permitted={can('STOCK_REQUIREMENT_APPROVE')}
         enabled={detail.status === 'SUBMITTED'}
-        disabledHint="Only a submitted requirement can be rejected"
+        disabledHint="Only a submitted requisition can be rejected"
         icon={<BlockIcon />}
         color="error"
         variant="outlined"
-        confirmTitle="Reject requirement"
+        confirmTitle="Reject requisition"
         confirmDescription={`${detail.documentNumber} will be rejected. The reason is stored on the document history.`}
         reason="required"
         reasonLabel="Rejection reason"
@@ -188,7 +188,7 @@ export function RequirementDetailPage() {
   return (
     <DocumentPageFrame
       backTo="/requirements"
-      backLabel="All requirements"
+      backLabel="All requisitions"
       isLoading={query.isLoading}
       error={query.error}
       onRetry={() => void query.refetch()}

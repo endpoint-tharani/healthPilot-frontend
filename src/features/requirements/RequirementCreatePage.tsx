@@ -110,10 +110,10 @@ export function RequirementCreatePage() {
     onSuccess: (document) => {
       void queryClient.invalidateQueries({ queryKey: ['stock-requirements'] });
       void queryClient.invalidateQueries({ queryKey: ['documents'] });
-      toast.success(`Requirement ${document.documentNumber} created`);
+      toast.success(`Requisition ${document.documentNumber} created`);
       navigate(`/requirements/${document.id}`, { replace: true });
     },
-    onError: (error) => toast.fromError(error, 'Unable to create this requirement'),
+    onError: (error) => toast.fromError(error, 'Unable to create this requisition'),
   });
 
   if (branchesLoading || productsLoading) {
@@ -123,7 +123,7 @@ export function RequirementCreatePage() {
   return (
     <form onSubmit={handleSubmit((values) => mutation.mutate(values))} noValidate>
       <PageHeader
-        title="New Stock Requirement"
+        title="New Stock Requisition"
         subtitle="Raise branch demand. It becomes actionable once submitted and approved."
         actions={
           <>
@@ -136,7 +136,7 @@ export function RequirementCreatePage() {
               variant="contained"
               disabled={mutation.isPending}
             >
-              {mutation.isPending ? 'Saving…' : 'Create requirement'}
+              {mutation.isPending ? 'Saving…' : 'Create requisition'}
             </Button>
           </>
         }
@@ -144,7 +144,7 @@ export function RequirementCreatePage() {
 
       <SubmitError error={mutation.error} />
 
-      <FormSection title="Requirement details">
+      <FormSection title="Requisition details">
         <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
             <SelectInput

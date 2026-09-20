@@ -89,7 +89,7 @@ function SourceList({ sources, withheldQty, withheldBranchCount }: SourcingOppor
 function Split({ opportunity }: { opportunity: SourcingOpportunity }) {
   return (
     <Stack direction="row" spacing={2.5} flexWrap="wrap" useFlexGap sx={{ mt: 0.5 }}>
-      <Figure label="Requirement remaining" value={opportunity.remainingQty} />
+      <Figure label="Requisition remaining" value={opportunity.remainingQty} />
       <Figure label="Suggested internal" value={opportunity.suggestedInternalQty} />
       <Figure label="Supplier procurement needed" value={opportunity.suggestedProcurementQty} />
     </Stack>
@@ -127,7 +127,7 @@ export function SourcingOpportunityBanner({
       <Alert severity={SEVERITY.NO_SURPLUS} sx={{ mb: 2.5 }}>
         <AlertTitle sx={{ mb: 0.25 }}>{HEADING.NO_SURPLUS}</AlertTitle>
         <Typography variant="body2">
-          No other branch holds usable stock it could spare for this requirement, so supplier
+          No other branch holds usable stock it could spare for this requisition, so supplier
           procurement is required for the{' '}
           <strong>{formatQuantity(suggestedProcurementQty)}</strong> still outstanding.
         </Typography>
@@ -151,8 +151,8 @@ export function SourcingOpportunityBanner({
       <AlertTitle sx={{ mb: 0.25 }}>{HEADING[status]}</AlertTitle>
       <Typography variant="body2">
         {status === 'HIGH_SURPLUS'
-          ? 'Internal stock could cover this requirement in full. An internal transfer is an alternative to buying it.'
-          : 'Internal stock could cover part of this requirement. The rest needs a supplier.'}
+          ? 'Internal stock could cover this requisition in full. An internal transfer is an alternative to buying it.'
+          : 'Internal stock could cover part of this requisition. The rest needs a supplier.'}
       </Typography>
       <Split opportunity={opportunity} />
       <SourceList {...opportunity} />
@@ -191,7 +191,7 @@ export function SourcingContextPanel({
         fontWeight={700}
         sx={{ textTransform: 'uppercase', letterSpacing: '0.04em', fontSize: 10.5 }}
       >
-        Requirement sourcing
+        Requisition sourcing
       </Typography>
       <Typography variant="subtitle2" sx={{ mt: 0.25 }}>
         {requirementNumber} · {formatQuantity(opportunity.remainingQty)} remaining

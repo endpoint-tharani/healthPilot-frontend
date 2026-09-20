@@ -221,7 +221,7 @@ export function runSmoke(): number {
   try {
     const html = render('/requirements', <AppLayout />);
     // The wordmark is split for the brand accent, so assert on stable landmarks.
-    for (const marker of ['Pharmacy ERP', 'Operations', 'Stock Requirements', 'Search documents']) {
+    for (const marker of ['Pharmacy ERP', 'Operations', 'Stock Requisitions', 'Search documents']) {
       if (!html.includes(marker)) {
         throw new Error(`layout did not render "${marker}"`);
       }

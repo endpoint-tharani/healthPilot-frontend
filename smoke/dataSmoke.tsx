@@ -56,7 +56,9 @@ import type {
   StockRow,
 } from '@/types/api';
 
-const BASE = 'http://localhost:4000/api';
+// Overridable so the harness can be pointed at an API that is not on the
+// default port, which is what running it beside another instance requires.
+const BASE = process.env.SMOKE_API ?? 'http://localhost:4000/api';
 
 async function api<T>(token: string, path: string): Promise<T> {
   const response = await fetch(BASE + path, { headers: { Authorization: `Bearer ${token}` } });
@@ -513,7 +515,7 @@ async function main() {
         }
         return html;
       },
-      ['Requirement sourcing', summary.documentNumber]
+      ['Requisition sourcing', summary.documentNumber]
     );
 
     // Surplus is never allowed to exceed what the requirement still needs once
