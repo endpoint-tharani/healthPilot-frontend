@@ -40,6 +40,16 @@ import { SuppliersPage } from '@/features/suppliers/SuppliersPage';
 import { BranchesPage } from '@/features/branches/BranchesPage';
 import { UsersPage } from '@/features/users/UsersPage';
 import { NotificationsPage } from '@/features/notifications/NotificationsPage';
+import { AccountingSetupPage } from '@/features/accounting/AccountingSetupPage';
+import { SupplierLedgerPage } from '@/features/accounting/SupplierLedgerPage';
+import { ChartOfAccountsPage } from '@/features/accounting/ChartOfAccountsPage';
+import { LedgerAccountsPage } from '@/features/accounting/LedgerAccountsPage';
+import { JournalListPage } from '@/features/accounting/JournalListPage';
+import { JournalDetailPage } from '@/features/accounting/JournalDetailPage';
+import { GeneralLedgerPage } from '@/features/accounting/GeneralLedgerPage';
+import { TrialBalancePage } from '@/features/accounting/TrialBalancePage';
+import { ProfitLossPage } from '@/features/accounting/ProfitLossPage';
+import { BalanceSheetPage } from '@/features/accounting/BalanceSheetPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
 /**
@@ -128,6 +138,19 @@ export function AppRoutes() {
           <Route element={<RequirePermission permissions={['INVENTORY_VIEW']} />}>
             <Route path="inventory" element={<StockOverviewPage />} />
             <Route path="inventory/ledger" element={<StockLedgerPage />} />
+          </Route>
+
+          <Route element={<RequirePermission permissions={['ACCOUNTING_VIEW']} />}>
+            <Route path="accounting/setup" element={<AccountingSetupPage />} />
+            <Route path="accounting/supplier-ledger" element={<SupplierLedgerPage />} />
+            <Route path="accounting/chart-of-accounts" element={<ChartOfAccountsPage />} />
+            <Route path="accounting/ledgers" element={<LedgerAccountsPage />} />
+            <Route path="accounting/journals" element={<JournalListPage />} />
+            <Route path="accounting/journals/:id" element={<JournalDetailPage />} />
+            <Route path="accounting/general-ledger" element={<GeneralLedgerPage />} />
+            <Route path="accounting/reports/trial-balance" element={<TrialBalancePage />} />
+            <Route path="accounting/reports/profit-loss" element={<ProfitLossPage />} />
+            <Route path="accounting/reports/balance-sheet" element={<BalanceSheetPage />} />
           </Route>
 
           <Route element={<RequirePermission permissions={['DOCUMENT_VIEW']} />}>

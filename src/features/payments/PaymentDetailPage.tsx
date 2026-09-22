@@ -36,6 +36,8 @@ import { DocumentRefLink } from '@/components/DocumentChain';
 import { FinancialSummary } from '@/components/FinancialSummary';
 import { StatCard } from '@/components/StatCard';
 import { ToneChip } from '@/components/StatusChip';
+import { AccountingStatusPanel } from '@/features/accounting/AccountingStatusPanel';
+import { PaymentJournals } from '@/features/accounting/PaymentJournals';
 import { DocumentPageFrame } from '@/features/documents/DetailShell';
 import { EmptyState } from '@/components/states';
 import { SubmitError } from '@/components/FormFields';
@@ -282,6 +284,24 @@ export function PaymentDetailPage() {
             ]}
           />
 
+          {/*
+            A supplier payment moves money out of the bank and clears a liability,
+            so it is an accounting event in its own right - and, not being a
+            Document, it is not reachable from any document's Accounting tab. This
+            is where it is answered for.
+          */}
+          {can('ACCOUNTING_VIEW') ? (
+            <AccountingStatusPanel
+              accounting={payment.accounting}
+              target="payment"
+              targetId={payment.id}
+              invalidateKeys={[
+                ['payment', payment.id],
+                ['accounting', 'payment-journals', payment.id],
+              ]}
+            />
+          ) : null}
+
           <Grid container spacing={1.5} sx={{ mb: 2.5 }}>
             <Grid item xs={12} sm={4}>
               <StatCard
@@ -388,6 +408,12 @@ export function PaymentDetailPage() {
               </Paper>
             </Grid>
           </Grid>
+
+          {can('ACCOUNTING_VIEW') ? (
+            <Box sx={{ mt: 2.5 }}>
+              <PaymentJournals paymentId={payment.id} paymentNumber={payment.paymentNumber} />
+            </Box>
+          ) : null}
 
           {payment.supplierId ? (
             <AllocateDialog

@@ -45,6 +45,14 @@ import { DispensingDetailPage } from '@/features/dispensing/DispensingDetailPage
 import { StockOverviewPage } from '@/features/inventory/StockOverviewPage';
 import { StockLedgerPage } from '@/features/inventory/StockLedgerPage';
 import { DocumentRegisterPage } from '@/features/documents/DocumentRegisterPage';
+import { ChartOfAccountsPage } from '@/features/accounting/ChartOfAccountsPage';
+import { LedgerAccountsPage } from '@/features/accounting/LedgerAccountsPage';
+import { JournalListPage } from '@/features/accounting/JournalListPage';
+import { JournalDetailPage } from '@/features/accounting/JournalDetailPage';
+import { GeneralLedgerPage } from '@/features/accounting/GeneralLedgerPage';
+import { TrialBalancePage } from '@/features/accounting/TrialBalancePage';
+import { ProfitLossPage } from '@/features/accounting/ProfitLossPage';
+import { BalanceSheetPage } from '@/features/accounting/BalanceSheetPage';
 import { AuditHistoryPage } from '@/features/documents/AuditHistoryPage';
 import { ProductsPage } from '@/features/products/ProductsPage';
 import { SuppliersPage } from '@/features/suppliers/SuppliersPage';
@@ -89,6 +97,9 @@ const ALL_PERMISSIONS: Permission[] = [
   'INVENTORY_VIEW',
   'DOCUMENT_VIEW',
   'AUDIT_VIEW',
+  'ACCOUNTING_VIEW',
+  'ACCOUNTING_POST',
+  'ACCOUNTING_MANAGE',
 ];
 
 const user: CurrentUser = {
@@ -184,6 +195,30 @@ const PAGES: { name: string; path: string; element: React.ReactNode }[] = [
   { name: 'DispensingDetailPage', path: '/dispensing/abc', element: <DispensingDetailPage /> },
   { name: 'StockOverviewPage', path: '/inventory', element: <StockOverviewPage /> },
   { name: 'StockLedgerPage', path: '/inventory/ledger', element: <StockLedgerPage /> },
+  {
+    name: 'ChartOfAccountsPage',
+    path: '/accounting/chart-of-accounts',
+    element: <ChartOfAccountsPage />,
+  },
+  { name: 'LedgerAccountsPage', path: '/accounting/ledgers', element: <LedgerAccountsPage /> },
+  { name: 'JournalListPage', path: '/accounting/journals', element: <JournalListPage /> },
+  { name: 'JournalDetailPage', path: '/accounting/journals/abc', element: <JournalDetailPage /> },
+  {
+    name: 'GeneralLedgerPage',
+    path: '/accounting/general-ledger',
+    element: <GeneralLedgerPage />,
+  },
+  {
+    name: 'TrialBalancePage',
+    path: '/accounting/reports/trial-balance',
+    element: <TrialBalancePage />,
+  },
+  { name: 'ProfitLossPage', path: '/accounting/reports/profit-loss', element: <ProfitLossPage /> },
+  {
+    name: 'BalanceSheetPage',
+    path: '/accounting/reports/balance-sheet',
+    element: <BalanceSheetPage />,
+  },
   { name: 'DocumentRegisterPage', path: '/documents', element: <DocumentRegisterPage /> },
   { name: 'AuditHistoryPage', path: '/audit', element: <AuditHistoryPage /> },
   { name: 'ProductsPage', path: '/products', element: <ProductsPage /> },

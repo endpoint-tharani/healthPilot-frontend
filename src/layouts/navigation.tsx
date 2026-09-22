@@ -12,10 +12,17 @@ import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
+import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
 import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
+import AccountBalanceOutlinedIcon from '@mui/icons-material/AccountBalanceOutlined';
+import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import BalanceOutlinedIcon from '@mui/icons-material/BalanceOutlined';
+import ImportContactsOutlinedIcon from '@mui/icons-material/ImportContactsOutlined';
+import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import type { Permission } from '@/types/api';
 
@@ -126,6 +133,67 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    title: 'Accounting',
+    items: [
+      {
+        label: 'Chart of Accounts',
+        path: '/accounting/chart-of-accounts',
+        icon: <AccountTreeOutlinedIcon fontSize="small" />,
+        permissions: ['ACCOUNTING_VIEW'],
+      },
+      {
+        label: 'Ledger Accounts',
+        path: '/accounting/ledgers',
+        icon: <AccountBalanceWalletOutlinedIcon fontSize="small" />,
+        permissions: ['ACCOUNTING_VIEW'],
+      },
+      {
+        label: 'Journal Entries',
+        path: '/accounting/journals',
+        icon: <ArticleOutlinedIcon fontSize="small" />,
+        permissions: ['ACCOUNTING_VIEW'],
+      },
+      {
+        label: 'General Ledger',
+        path: '/accounting/general-ledger',
+        icon: <ImportContactsOutlinedIcon fontSize="small" />,
+        permissions: ['ACCOUNTING_VIEW'],
+      },
+      {
+        label: 'Supplier Ledger',
+        path: '/accounting/supplier-ledger',
+        icon: <StorefrontOutlinedIcon fontSize="small" />,
+        permissions: ['ACCOUNTING_VIEW'],
+      },
+      {
+        label: 'Trial Balance',
+        path: '/accounting/reports/trial-balance',
+        icon: <BalanceOutlinedIcon fontSize="small" />,
+        permissions: ['ACCOUNTING_VIEW'],
+      },
+      {
+        label: 'Profit & Loss',
+        path: '/accounting/reports/profit-loss',
+        icon: <ShowChartOutlinedIcon fontSize="small" />,
+        permissions: ['ACCOUNTING_VIEW'],
+      },
+      {
+        label: 'Balance Sheet',
+        path: '/accounting/reports/balance-sheet',
+        icon: <AccountBalanceOutlinedIcon fontSize="small" />,
+        permissions: ['ACCOUNTING_VIEW'],
+      },
+      // Last in the section on purpose: it is where somebody goes when something
+      // did not post, not somewhere they pass through daily.
+      {
+        label: 'Accounting Setup',
+        path: '/accounting/setup',
+        icon: <FactCheckOutlinedIcon fontSize="small" />,
+        permissions: ['ACCOUNTING_VIEW'],
+      },
+    ],
+  },
+  {
     title: 'Masters',
     items: [
       {
@@ -201,6 +269,15 @@ export const ROUTE_TITLES: Record<string, string> = {
   '/branches/new': 'New Branch',
   '/users/new': 'New User',
   '/notifications': 'Notifications',
+  '/accounting/chart-of-accounts': 'Chart of Accounts',
+  '/accounting/ledgers': 'Ledger Accounts',
+  '/accounting/journals': 'Journal Entries',
+  '/accounting/general-ledger': 'General Ledger',
+  '/accounting/supplier-ledger': 'Supplier Ledger',
+  '/accounting/setup': 'Accounting Setup',
+  '/accounting/reports/trial-balance': 'Trial Balance',
+  '/accounting/reports/profit-loss': 'Profit & Loss',
+  '/accounting/reports/balance-sheet': 'Balance Sheet',
 };
 
 /** Quick-create menu behind the "+" button, filtered by permission. */

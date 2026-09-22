@@ -7,6 +7,8 @@
 import { renderToString } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthContext, type AuthState } from '@/auth/AuthContext';
 import { theme } from '@/app/theme';
 import { DataTable, type Column } from '@/components/DataTable';
 import { LineItemsTable } from '@/components/LineItemsTable';
@@ -69,10 +71,41 @@ async function api<T>(token: string, path: string): Promise<T> {
   return body.data as T;
 }
 
+/**
+ * The providers the running application always has around a page.
+ *
+ * DocumentWorkspace reads the session to decide whether to offer the accounting
+ * tab, and the components inside it fetch through react-query, so rendering one
+ * without these is rendering it in a state the app never puts it in. The session
+ * is stubbed with every permission granted, so the harness exercises the widest
+ * version of each page rather than the most restricted.
+ */
+const auth: AuthState = {
+  user: null,
+  initialising: false,
+  login: async () => undefined,
+  signup: async () => undefined,
+  logout: async () => undefined,
+  can: () => true,
+  canAny: () => true,
+  hasAllBranches: true,
+  allowedBranchIds: null,
+};
+
 function wrap(node: React.ReactNode) {
+  // A fresh client per render, with retries off: a server render never gets a
+  // second chance, and a retrying query would only delay the same empty result.
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false, gcTime: 0 } },
+  });
+
   return renderToString(
     <ThemeProvider theme={theme}>
-      <MemoryRouter>{node}</MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <AuthContext.Provider value={auth}>
+          <MemoryRouter>{node}</MemoryRouter>
+        </AuthContext.Provider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

@@ -6,6 +6,8 @@ import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import { DocumentDetailLayout, DetailSection, type DocumentTab } from '@/components/DocumentDetailLayout';
+import { DocumentJournals } from '@/features/accounting/DocumentJournals';
+import { useAuth } from '@/auth/useAuth';
 import { DocumentHeader, type DocumentFact } from '@/components/DocumentHeader';
 import { DocumentFlow } from '@/components/DocumentFlow';
 import { DocumentChain } from '@/components/DocumentChain';
@@ -172,6 +174,7 @@ export function DocumentWorkspace({
   const ledgerRows = movements ?? detail.inventoryTransactions;
   const moneyLines = totals === undefined ? documentTotals(detail) : totals;
   const auditHidden = detail.history === undefined;
+  const { can } = useAuth();
 
   const tabs: DocumentTab[] = [
     {
@@ -267,6 +270,19 @@ export function DocumentWorkspace({
             showSourceDocument={Boolean(movements)}
           />
         ),
+    },
+    {
+      key: 'accounting',
+      label: 'Accounting',
+      visible: can('ACCOUNTING_VIEW'),
+      content: (
+        <DocumentJournals
+          documentId={detail.id}
+          documentType={detail.documentType}
+          documentNumber={detail.documentNumber}
+          accounting={detail.accounting}
+        />
+      ),
     },
     {
       key: 'payments',

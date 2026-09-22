@@ -3,6 +3,7 @@
  * as a fixed-point string (Decimal.toFixed(2)) and stays a string until it is
  * formatted or handed to decimal.js - it is never parsed into a JS float.
  */
+import type { DocumentAccountingState } from './accounting';
 
 export type BranchType = 'CENTRAL_WAREHOUSE' | 'BRANCH';
 export type BranchScopeType = 'ALL_BRANCHES' | 'SPECIFIC_BRANCHES';
@@ -102,7 +103,10 @@ export type Permission =
   | 'DISPENSING_VIEW'
   | 'INVENTORY_VIEW'
   | 'DOCUMENT_VIEW'
-  | 'AUDIT_VIEW';
+  | 'AUDIT_VIEW'
+  | 'ACCOUNTING_VIEW'
+  | 'ACCOUNTING_POST'
+  | 'ACCOUNTING_MANAGE';
 
 export interface PageMeta {
   page: number;
@@ -282,6 +286,8 @@ export interface DocumentSummary {
   supplierRef: string | null;
   patientRef: string | null;
   prescriptionRef: string | null;
+  /** Where this document stands with the books, and why. */
+  accounting: DocumentAccountingState;
   createdById: string;
   createdAt: string;
   updatedAt: string;
@@ -601,6 +607,8 @@ export interface Payment {
   allocations: PaymentAllocationEntry[];
   allocatedAmount: string;
   unallocatedAmount: string;
+  /** Mirrors the document shape, so both pages read one accounting contract. */
+  accounting: DocumentAccountingState;
 }
 
 /* ----------------------------------------------------------- inventory ---- */

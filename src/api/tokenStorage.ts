@@ -57,3 +57,38 @@ export function getAccessToken(): string | null {
 export function getRefreshToken(): string | null {
   return getTokens()?.refreshToken ?? null;
 }
+
+/**
+ * Reads straight from localStorage, bypassing the in-memory cache.
+ *
+ * The cache exists so the request interceptor does not parse JSON on every call,
+ * but it is per-tab and never sees what another tab wrote. The refresh path is
+ * the one place that has to observe a rotation performed elsewhere, so it reads
+ * through these instead. The cache is refreshed on the way past, so a successful
+ * cross-tab rotation also settles this tab's cached copy.
+ */
+function readFromStorage(): StoredTokens | null {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      cache = null;
+      return null;
+    }
+    const parsed = JSON.parse(raw) as Partial<StoredTokens>;
+    if (!parsed.accessToken || !parsed.refreshToken) {
+      return null;
+    }
+    cache = { accessToken: parsed.accessToken, refreshToken: parsed.refreshToken };
+    return cache;
+  } catch {
+    return null;
+  }
+}
+
+export function readAccessTokenFromStorage(): string | null {
+  return readFromStorage()?.accessToken ?? null;
+}
+
+export function readRefreshTokenFromStorage(): string | null {
+  return readFromStorage()?.refreshToken ?? null;
+}

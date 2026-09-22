@@ -28,6 +28,12 @@ and **COGS**.
 Every stock figure in the product is derived from the **stock ledger** (`InventoryTransaction`).
 There is no second balance table that could drift from it.
 
+On top of that sits a **double-entry accounting module** built on the **Ind AS reporting format**:
+Nature — Nature Type — Head — Group — Sub Group — Ledger. Supplier invoices, supplier
+payments, dispensing sales and cost of goods sold raise balanced journal entries through explicit,
+idempotent accounting events, and the Trial Balance, Profit & Loss and Balance Sheet are derived
+from posted journal lines on every request.
+
 ## 2. Architecture
 
 **One document model.** Requisitions, purchase orders, goods receipts, corrections, invoices,
@@ -46,6 +52,19 @@ Backend                                  Frontend
   prisma/      schema, migrations          types/      API contract types
 ```
 
+The accounting hierarchy, as the Ind AS reporting format defines it:
+
+```
+IND_AS reporting format
+  Nature (AS, LI, EQ, IN, EX)
+    Nature Type (Current / Non-Current, ...)
+      Head (AS-0009 Inventories, LI-0006 Trade payables, IN-0001 Revenue, ...)
+        Group          (optional)
+          Sub Group    (optional)
+            Ledger (4101 Sales, 5101 COGS, 5201 Purchases, ...)
+              JournalLine -> JournalEntry -> General Ledger -> Trial Balance / P&L / Balance Sheet
+```
+
 Rules that matter:
 
 - **Posted documents are immutable.** A mistake is corrected by a new document carrying the signed
@@ -57,6 +76,15 @@ Rules that matter:
 - **Branch scope is applied in the query**, never to a result set after fetching.
 - **Fulfilment is branch-aware.** A requisition is met by usable stock that reached *the branch that
   raised it* — stock sitting in the central warehouse does not count.
+- **Accounting is an explicit, idempotent event.** Posting a document's accounting twice returns the
+  journal raised the first time. Duplicate postings are refused by a unique index on
+  `(companyId, sourceEventKey)`, not by a check two concurrent requests could both pass.
+- **Posted journals are immutable.** A correction is a reversing entry with every debit and credit
+  swapped; the original stays in the record. The debit/credit rules and the balance of a posted
+  entry are `CHECK` constraints in Postgres, so they hold against raw SQL too.
+- **No business service names a ledger code.** Accounts are resolved by role
+  (`SALES`, `INVENTORY`, `BANK`, ...) through `AccountMapping`, with an optional per-branch
+  override.
 
 ## 3. Setup
 
@@ -235,6 +263,28 @@ Seed, then sign in as `central@healthpilot.ai` and follow the chain:
 | 09 Sep | `TRF-0001` | 30 vials Central → Branch A, linked to `REQ-0001` |
 | 09 Sep | `DSP-0001` | 5 vials, ₹3,250 + ₹162.50 tax = ₹3,412.50, paid by CARD, COGS ₹2,500 (`PAY-0002`) |
 
+The seed then raises the accounting for that chain, through the same event functions the API
+exposes. Four journals, all balanced:
+
+| Journal | Event | Entry |
+| --- | --- | --- |
+| `JV-0001` | Supplier invoice | Dr Inventory ₹35,000 · Dr Input GST ₹1,750 · Cr Trade Payables ₹36,750 |
+| `JV-0002` | Supplier payment | Dr Trade Payables ₹36,750 · Cr Bank ₹36,750 |
+| `JV-0003` | Sales | Dr Bank ₹3,412.50 · Cr Sales ₹3,250 · Cr Output GST ₹162.50 |
+| `JV-0004` | COGS | Dr COGS ₹2,500 · Cr Inventory ₹2,500 |
+
+Two documents deliberately raise **no** journal, and the reconciliation report says so rather than
+leaving a gap:
+
+- **`TRF-0001`, the internal stock transfer.** The same stock, at the same cost, moves between two
+  branches of one company. No revenue is earned and no expense incurred, so recognising a sale on it
+  would let the company book profit by moving boxes between its own shelves — and would
+  double-count against the real sale when the stock is eventually dispensed. The branch-level
+  movement is already in the stock ledger.
+- **`CN-0001`, the ₹15,750 credit note.** `JV-0001` books the *accepted payable* of ₹36,750, not the
+  ₹52,500 the supplier claimed, so the ₹15,750 the credit note clears was never a liability in the
+  books. Booking it again would take Trade Payables below what is actually owed.
+
 Final position, all derived from the stock ledger:
 
 | | Usable | Damaged | Dispensed | Missing |
@@ -252,6 +302,10 @@ usable vials that reached the central warehouse are company stock but are not Br
 # backend, no server required
 npm run verify:scenario            # stock, money, document chain, ledger integrity
 npm run verify:seed                # what the seed produced
+
+npm run verify:accounting          # the books: balances, reports, isolation, reconciliation
+npm run test                       # vitest: unit + integration (integration needs a database)
+npm run test:unit                  # vitest: pure logic only, no database
 
 # backend, against a running server (these leave documents behind - re-seed after)
 npm run verify:controls            # concurrency, post-invoice corrections, invalid transfers
